@@ -9,12 +9,23 @@
 #import "SignInViewController.h"
 #import "SignInView.h"
 #import "MenuViewController.h"
+#import "KeychainItemWrapper.h"
 
 @interface SignInViewController ()
 
 @end
 
 @implementation SignInViewController
+
+- (bool)isSignedIn {
+    KeychainItemWrapper *keychain =
+    [[KeychainItemWrapper alloc] initWithIdentifier:KEYCHAIN_IDENTIFIER accessGroup:nil];
+    if ([keychain objectForKey:(id)kSecAttrAccount]) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 - (id)init {
     self = [super init];
@@ -40,6 +51,10 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view.
+    if ([self isSignedIn]) {
+        NSLog(@"SIGNED IN ============");
+        [self presentMenuView];
+    }
 }
 
 - (void)viewDidUnload{
@@ -49,6 +64,7 @@
 - (void)dealloc {
     [_usernameField release];
     [_passwordField release];
+    [_notificationLabel release];
     [super dealloc];
 }
 
@@ -57,6 +73,24 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+- (void)presentMenuView {
+    MenuViewController *menuViewController = [[[MenuViewController alloc] init] autorelease];
+    [menuViewController setModalPresentationStyle:UIModalPresentationFormSheet];
+    
+    //  Animates the modal only if it's an iPad
+    BOOL shouldAnimateTransition = NO;
+    if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
+    {
+        shouldAnimateTransition = YES;
+    }
+    
+    dispatch_async( dispatch_get_main_queue(), ^{
+        UIViewController *presentingViewController = [self presentingViewController];
+        [menuViewController presentMenuViewController:self animated:YES completion:nil presentingViewController:presentingViewController];
+    });
+}
+
 
 - (IBAction)signInPressed:(id)sender {
     NSString *username = [_usernameField text];
@@ -74,7 +108,7 @@
     }
     
     NSString *requestString = [NSString stringWithFormat:
-                               @"http://10.190.71.27:3000/users"];
+                               @"http://colab-sbx-13.oit.duke.edu:3000/users"];
     
     NSURL *url = [NSURL URLWithString:requestString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
@@ -84,35 +118,20 @@
     [request setValue:[NSString stringWithFormat:@"%d", [jsonData length]] forHTTPHeaderField:@"Content-Length"];
     
     NSError *errorReturned = nil;
-    NSURLResponse *theResponse =[[NSURLResponse alloc]init];
-    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&theResponse error:&errorReturned];
+    NSHTTPURLResponse *serverResponse =[[NSHTTPURLResponse alloc]init];
+    NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&serverResponse error:&errorReturned];
     
-    if (errorReturned) {
+    NSLog(@"RESPONSE: %d", [serverResponse statusCode]);
+    if ([serverResponse statusCode] != 200) {
+        // Username taken
+        NSLog(@"Username taken");
+        [_notificationLabel setText:@"Username taken"];
+    } else if (errorReturned) {
         NSLog(@"Error %@",errorReturned.description);
     } else {
         NSError *jsonParsingError = nil;
         NSMutableArray *arrDoctorInfo  = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers|NSJSONReadingAllowFragments error:&jsonParsingError];
-        
-        NSLog(@"Dict %@",arrDoctorInfo);
-        
-        
-        MenuViewController *menuViewController = [[[MenuViewController alloc] init] autorelease];
-        [menuViewController setModalPresentationStyle:UIModalPresentationFormSheet];
-        
-        //  Animates the modal only if it's an iPad
-        BOOL shouldAnimateTransition = NO;
-        if([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad)
-        {
-            shouldAnimateTransition = YES;
-        }
-        
-        dispatch_async( dispatch_get_main_queue(), ^{
-//            [self presentModalViewController:aboutViewController animated:shouldAnimateTransition];
-            
-            UIViewController *presentingViewController = [self presentingViewController];
-            [menuViewController presentMenuViewController:self animated:YES completion:nil presentingViewController:presentingViewController];
-        });
-        
+        [self presentMenuView];
     }
     
 }

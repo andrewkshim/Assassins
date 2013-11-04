@@ -1,0 +1,278 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Structured General Purpose Assignment
+% LaTeX Template
+%
+% This template has been downloaded from:
+% http://www.latextemplates.com
+%
+% Original author:
+% Ted Pavlic (http://www.tedpavlic.com)
+%
+% Note:
+% The \lipsum[#] commands throughout this template generate dummy text
+% to fill the template out. These commands should all be removed when 
+% writing assignment content.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{lipsum} % Used for inserting dummy 'Lorem ipsum' text into the template
+\usepackage[colorlinks=true, urlcolor=blue]{hyperref}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in 
+
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\hmwkAuthorName} % Top left header
+\chead{\hmwkClass\ \hmwkTitle} % Top center header
+\rhead{\dueDate} % Top right header
+\lfoot{\lastxmark} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT STRUCTURE COMMANDS
+%	Skip this unless you know what you're doing
+%----------------------------------------------------------------------------------------
+
+% Header and footer for when a page split occurs within a problem environment
+\newcommand{\enterProblemHeader}[1]{
+\nobreak\extramarks{#1}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+}
+
+% Header and footer for when a page split occurs between problem environments
+\newcommand{\exitProblemHeader}[1]{
+\nobreak\extramarks{#1 (continued)}{#1 continued on next page\ldots}\nobreak
+\nobreak\extramarks{#1}{}\nobreak
+}
+
+\setcounter{secnumdepth}{0} % Removes default section numbers
+\newcounter{homeworkProblemCounter} % Creates a counter to keep track of the number of problems
+
+\newcommand{\homeworkProblemName}{}
+\newenvironment{homeworkProblem}[1][Problem \arabic{homeworkProblemCounter}]{ % Makes a new environment called homeworkProblem which takes 1 argument (custom name) but the default is "Problem #"
+\stepcounter{homeworkProblemCounter} % Increase counter for number of problems
+\renewcommand{\homeworkProblemName}{#1} % Assign \homeworkProblemName the name of the problem
+\section{\homeworkProblemName} % Make a section in the document with the custom problem count
+\enterProblemHeader{\homeworkProblemName} % Header and footer within the environment
+}{
+\exitProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand{\problemAnswer}[1]{ % Defines the problem answer command with the content as the only argument
+\noindent\framebox[\columnwidth][c]{\begin{minipage}{0.98\columnwidth}#1\end{minipage}} % Makes the box around the problem answer and puts the content inside
+}
+
+\newcommand{\homeworkSectionName}{}
+\newenvironment{homeworkSection}[1]{ % New environment for sections within homework problems, takes 1 argument - the name of the section
+\renewcommand{\homeworkSectionName}{#1} % Assign \homeworkSectionName to the name of the section from the environment argument
+\subsection{\homeworkSectionName} % Make a subsection with the custom name of the subsection
+\enterProblemHeader{\homeworkProblemName\ [\homeworkSectionName]} % Header and footer within the environment
+}{
+\enterProblemHeader{\homeworkProblemName} % Header and footer after the environment
+}
+
+\newcommand\textline[4][t]{%
+  \par\smallskip\noindent\parbox[#1]{.200\textwidth}{\raggedright#2}%
+  \parbox[#1]{.600\textwidth}{\centering\Large\textbf{#3}}%
+  \parbox[#1]{.200\textwidth}{\raggedleft#4}\par\smallskip%
+  \line(1,0){470}
+}
+   
+%----------------------------------------------------------------------------------------
+%	NAME AND CLASS SECTION
+%----------------------------------------------------------------------------------------
+
+\newcommand{\hmwkTitle}{Final Project Proposal} % Assignment title
+\newcommand{\hmwkDueDate}{Monday,\ January\ 1,\ 2012} % Due date
+\newcommand{\hmwkClass}{CS\ 344} % Course/class
+\newcommand{\hmwkClassTime}{10:30am} % Class/lecture time
+\newcommand{\hmwkClassInstructor}{Jones} % Teacher/lecturer
+\newcommand{\hmwkAuthorName}{Andrew Shim} % Your name
+\newcommand{\dueDate}{30 Oct 2013}
+
+\begin{document}\thispagestyle{empty}
+
+%----------------------------------------------------------------------------------------
+%	TITLE 
+%----------------------------------------------------------------------------------------
+
+\textline[t]{Due: \dueDate}{\hmwkClass\ \hmwkTitle}{\hmwkAuthorName}
+
+%----------------------------------------------------------------------------------------
+
+\section{Update Since Initial Proposal}
+This document is pretty much the same as the Initial Project Proposal, but I 
+have a couple updates. First, I have decided to use \href{https://www.vuforia.com/}{Vuforia},
+which is an AR SDK. Given this, I will likely not use OpenCV, because
+Vuforia provides image recognition out of the box (although I will have to
+tweak it to my needs). Also, I have set up an
+XCode project and a GitHub repository: \\\\
+\url{https://github.com/andrewkshim/Assassins}
+\\\\
+The rest of this document is the same. I am slightly behind my outlined
+schedule but I set in some buffer time so I'm still projected to 
+finish on time.
+
+\section{Description of Final Product}
+I want to make an augmented reality (AR) game for the iPhone. Here are some samples
+of AR games for mobile devices:
+\begin{itemize}
+  \item\href{http://www.youtube.com/watch?v=rB5xUStsUs4}{AR Defender}
+  \item\href{http://www.youtube.com/watch?v=Ce1U_9DRcac}{Zombies Everywhere!}
+\end{itemize}
+My game is going to be an AR adaptation of the game 
+\href{http://en.wikipedia.org/wiki/Assassin_(game)}{Assassins} and
+will go by the same name for now (I know its no ``Peckerman'' or 
+``Sil y Vega Peck''). The basic premise of \texttt{Assassins} is similar to 
+\href{http://en.wikipedia.org/wiki/Tag_(game)}{Tag}
+but with a couple of ``killer'' modifications; you gather a group
+of players then the game host/referee will assign each player a target
+(another player) to ``assassinate''. Assassination can entail a variety of
+actions, some examples I have seen are: poking the person in the back with a spoon 
+(basically simulating that you're stabbing them, I know it is violent but the 
+game's intentions are completely harmless I swear), 
+touching them with a (clean) sock, and shooting them with a 
+\href{http://www.hasbro.com/nerf/en_us/}{Nerf Gun}. Over time, several 
+embellishments to the game have been added. For example, a common practice
+is to allow players to carry a safety item (usually something 
+cumbersome or embarrassing such as a pair of underwear) that gives them
+immunity to attacks as long as the item is visible.
+\\\\
+My current vision for the game is that users will use their camera 
+viewfinders in order to claim their targets (more details below). 
+The attack will not be instantaneous, instead the target will receive
+a notification about the attack and will have the opportunity 
+to evade it if they notice in time. The attackers' cameras will be able to
+recognize their targets because every target will be required to 
+wear a brightly colored square (they can print these out themselves)
+that must be clearly visible. If the square is not visible, the attackers
+can attack by taking a photo of their targets and sending it to the game host, who can 
+then confirm the attack and eliminate the target. The safety item will also
+be a part of the game and will be implemented with brightly colored 
+squares as well (players will need to get used to wearing squares).
+If the attacker's camera sees the safety item on the target, 
+the attacker will not be able to attack.
+\\\\
+This is the very basic functionality I want in the game. Time permitting,
+I plan on adding features such as traps and powerups. An example of a trap
+is a landmine, which a player might place in a highly trafficked area
+to blow up unsuspecting players. The landmines would use GPS
+coordinates, so if a player was within some trigger distance to a landmine they would
+get eliminated. A powerup example is a one-time use shield, allowing a player to survive
+an attempt on their virtual life.
+
+\section{Using Computer Graphics}
+One cannot have AR without computer graphics (CG). \texttt{Assassins} will use various computer 
+graphics to enhance the player experience. 
+\subsection{CG in the Attacker's View}
+As attackers are viewing their targets through their phone cameras, if the target is wearing the
+safety item (the colored square) I will render an aura of light around the target,
+which will be done through a particle generator.
+Also, I will to use computer vision (\href{http://opencv.org/}{OpenCV}) to detect the 
+targets and form a bounding box around them. 
+Once attackers have their target on their screens, they will need to tap 
+on the target and ``shoot'' them down.
+A tap will send out an energy ball that will get
+smaller as it goes farther into the negative z direction. Once the 
+sphere is small enough and if it is still within the target's bounding box,
+the target will have been hit.
+\subsection{CG in Any Player's View}
+If I get to implement powerups, I will make them such that
+powerups appear at random GPS coordinates. Note that I plan on 
+having the referee bound the game map to a square defined by four GPS 
+coordinates so if a group of Duke students are playing, a powerup will
+not pop up in Venice. Players will be notified if they are near a powerup, after
+which they will need to pull out their phone cameras. If they are in the correct
+location, their camera will show a visible sparkle (more particle generators) 
+in the center of the screen
+and they will pick up the powerup, after which the powerup will no longer be 
+available to other players.
+\subsection{Related CG Topics}
+The CG enhancements fall under a range of topics we have covered in class. Using the
+energy balls as the primary example,
+I will need to set up the \textbf{material properties} to make them look like 
+\href{http://blog.tricyclestudios.com/?tag=hadouken-photo}{this} (top photo).
+If you are reading this as a print out then you probably cannot click the 
+link, so just imagine the energy balls as shiny blue balls of light.
+Also, as the energy balls travel in the scene, I will make it such that 
+they emit light (\textbf{emissive}), and to make it realistic I will modify
+the scene's \textbf{shading and lighting} based on the energy ball's location.
+To make them look even cooler, I will use a \textbf{particle generator} to give
+them an aura. I plan on using a combination of \textbf{OpenGL} and iOS 7's new 
+\href{https://developer.apple.com/library/ios/documentation/GraphicsAnimation/Conceptual/SpriteKit_PG/Introduction/Introduction.html#//apple_ref/doc/uid/TP40013043}{SpriteKit framework} to implement all of these effects.
+
+\section{Who is Working on the Project}
+Me! I am flying solo on this one. I will do all the things! 
+
+\section{Hardware Requirements}
+I have an iPhone to test the app and a Mac to develop on; I will not need 
+any additional hardware.
+
+\section{Project Timeline}
+
+\begin{itemize}
+  \item October 25 - Create XCode project, begin core backend 
+    \begin{itemize}
+      \item Set up User and Round models
+      \begin{itemize}
+        \item User can be a Host or a Player
+        \item Allow Hosts to create a Round
+        \item Allow Hosts to invite Users to a Round 
+        \item Allow Hosts to assign targets to Users
+      \end{itemize}
+    \end{itemize}
+  \item October 28 - Begin writing final project proposal
+  \item October 30 - Final project proposal due, download OpenCV for iOS
+  \item November 1 - Finish core backend, begin UI, weekly progress check
+    \begin{itemize}
+      \item Make sure everything from October 25th is working and bug-free
+      \item Allow Players to recognize their targets 
+      \item Use OpenCV to recognize brightly colored squares in the scene
+      \begin{itemize}
+        \item Implement logic to prevent Players from attacking when the
+          target's square is visible
+        \item Place an aura particle generator at the location of the square
+      \end{itemize}
+    \end{itemize}
+  \item November 8 - More UI, start backend for cooler features, weekly progress check 
+    \begin{itemize}
+      \item Allow Players to fire energy balls at their targets 
+      \item Use OpenCV to create bounding bounding boxes around the target
+      \item Implement logic to determine a successful attack
+      \item Remove Player from Round if they have been hit
+    \end{itemize}
+  \item November 15 - Catch up (buffer time in case there is a delay 
+    in the schedule), weekly progress check
+  \item November 22 - Begin final project write up, polish code and iron out all current bugs, 
+    weekly progress check
+  \item November 29 - Finish final project write up, begin bonus features (e.g.\ traps and powerups),
+    weekly progress check
+  \item December 6 - Final project write up due, finish bonus features, weekly progress check
+  \item December 13 - Practice demo, iron out all remaining bugs
+  \item December 14 - Demo
+\end{itemize}
+
+\end{document}

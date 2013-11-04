@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		071AC39018284FE800D2BCBA /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 071AC38F18284FE800D2BCBA /* KeychainItemWrapper.m */; };
 		07230F191814251300F871F4 /* libQCAR.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 07230F181814251300F871F4 /* libQCAR.a */; };
 		0728BCC21813A49D00DD67EC /* SignInViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728BCC11813A49D00DD67EC /* SignInViewController.m */; };
 		0728BCCC1813A7A900DD67EC /* SignInView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728BCCB1813A7A900DD67EC /* SignInView.m */; };
@@ -92,6 +93,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		071AC38E18284FE800D2BCBA /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
+		071AC38F18284FE800D2BCBA /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
 		07230F181814251300F871F4 /* libQCAR.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libQCAR.a; sourceTree = "<group>"; };
 		0728BCC01813A49D00DD67EC /* SignInViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInViewController.h; sourceTree = "<group>"; };
 		0728BCC11813A49D00DD67EC /* SignInViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignInViewController.m; sourceTree = "<group>"; };
@@ -377,6 +380,8 @@
 		67B3764D161349160028C574 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				071AC38E18284FE800D2BCBA /* KeychainItemWrapper.h */,
+				071AC38F18284FE800D2BCBA /* KeychainItemWrapper.m */,
 				67A1A068161B68B600EE9BD1 /* Protocols */,
 				67B3764E161349160028C574 /* UserDefinedTargets */,
 				67B37661161349160028C574 /* ViewControllers */,
@@ -582,6 +587,7 @@
 				67A1A078161B909100EE9BD1 /* CustomButton.m in Sources */,
 				15CE871A16417063005AE890 /* AR_EAGLView.mm in Sources */,
 				15CE871B16417063005AE890 /* ARParentViewController.mm in Sources */,
+				071AC39018284FE800D2BCBA /* KeychainItemWrapper.m in Sources */,
 				0728BCDB18140FEA00DD67EC /* MenuViewController.m in Sources */,
 				0728BCD1181406D900DD67EC /* NavigationViewController.m in Sources */,
 				15CE871C16417063005AE890 /* ARViewController.mm in Sources */,
