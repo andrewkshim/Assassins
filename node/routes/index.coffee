@@ -19,12 +19,88 @@ isExistingUser = (userParams, trueCallback, falseCallback) ->
       falseCallback()
   )
 
+assignTargets = (gameId, res) ->
+ if (gameId)
+    console.log('Assigning users')
+    games.findOne(
+      { _id: gameId }
+      {}, (err, game) ->
+        if (err)
+          return next(err)
+        firstUser = null
+        currentUser = null
+        nextUser = null
+        numberOfAssignedUsers = 0
+        console.log('  Looping through users')
+        console.log(game)
+        res.send(200, game)
+        game.userIds.forEach( (userId) ->
+          userId = users.id(userId)
+          userObjects = []
+          users.findOne(
+            { _id: userId }, (err, user) ->
+              if (err)
+                return next(err)
+
+              userObjects.push(user)
+              console.log("User =====")
+              console.log(user)
+              if (not currentUser)
+                currentUser = user
+                firstUser = user
+                ++numberOfAssignedUsers
+              else
+                nextUser = user
+                users.update({
+                  _id: users.id(currentUser._id)
+                }, {
+                  $addToSet: { 'targets': {
+                      _id: nextUser._id
+                      name: nextUser.name
+                    }
+                  }
+                }, (err, result) ->
+                  if (err)
+                    return next(err)
+                  currentUser = nextUser
+                  ++numberOfAssignedUsers
+                  if (numberOfAssignedUsers is game.userIds.length)
+                    users.update({
+                      _id: users.id(currentUser._id)
+                    }, {
+                      $addToSet: { 'targets': {
+                          _id: users.id(firstUser._id)
+                          name: firstUser.name
+                        }
+                      }
+                    }, (err, results) ->
+                    )
+                    console.log('All users assigned')
+                )
+          )
+        )
+    )
+  else
+    res.send(400)
+
+
+
 exports.users = {}
 exports.users.all = (req,res) ->
+  console.log("Getting all users")
   users.find().toArray( (err, results) ->
     if (err)
       return next(err)
-    res.send(200, results)
+    userData = results.map( (user) ->
+      name = user.name
+      if name is undefined
+        name = "Unknown assassin"
+      return {
+        name: name
+        _id: user._id
+      }
+    )
+    res.send(200, { users: userData })
   )
 
 exports.users.new  = (req,res) ->
@@ -132,6 +208,33 @@ exports.users.delete = (req,res) ->
       res.send(200)
   )
 
+exports.users.createdGames = (req, res) ->
+  creatorId = users.id(req.params.creatorId)
+  if (creatorId)
+    users.findOne({ _id: creatorId }, (err, user) ->
+      if (err)
+        return next(err)
+      return res.send(200, user.createdGameIds)
+    )
+  else
+    return res.send(400, { error: 'Creator id required' })
+  
+exports.users.targets = (req, res) ->
+  userId = users.id(req.params.id)
+  console.log('getting users targets')
+  if (userId)
+    users.findOne({ _id: userId }, (err, user) ->
+      if (err)
+        return next(err)
+      console.log({
+        targets: user.targets
+      })
+      return res.send(200, { targets: user.targets })
+    )
+  else
+    return res.send(400, { error: 'User id required' })
+
+
 exports.games = {}
 exports.games.new = (req,res) ->
   creatorId = req.body.creatorId
@@ -186,6 +289,34 @@ exports.games.addUser = (req,res) ->
       })
   )
 
+exports.games.newWithUsers = (req, res) ->
+  creatorId = users.id(req.body.creatorId)
+  console.log("Creating new game with users")
+  console.log(req.body)
+  if (creatorId)
+    gameParams = req.body
+    games.insert(gameParams, {}, (err, results) ->
+      games.findOne({}, { sort: [[ '_id', -1 ]] }, (err, game) ->
+        if (err)
+          return next(err)
+        console.log("Creating game: ")
+        console.log(game)
+        users.update(
+          { _id: creatorId }
+          { $addToSet: {
+              'createdGameIds': games.id(game._id)
+            }
+          }
+          (err, results) ->
+            if (err)
+              return next(err)
+        )
+        assignTargets(games.id(game._id), res)
+      )
+    )
+  else
+    res.send(400, { error: 'Creator id needed' })
+ 
 exports.games.removeUser = (req, res) ->
   userId = users.id(req.body.userId)
   gameId = games.id(req.params.gameId)
@@ -209,57 +340,7 @@ exports.games.removeUser = (req, res) ->
 
 exports.games.assignTargets = (req,res) ->
   gameId = games.id(req.params.gameId)
-  if (gameId)
-    console.log('Assigning users')
-    res.send(200)
-    games.findOne(
-      { _id: gameId }
-      {}, (err, game) ->
-        firstUser = null
-        currentUser = null
-        nextUser = null
-        numberOfAssignedUsers = 0
-        console.log('  Looping through users')
-        console.log(game)
-        userIds = game.userIds.forEach( (userId) ->
-          userId = users.id(userId)
-          userObjects = []
-          console.log(userIds)
-          users.findOne(
-            { _id: userId }, (err, user) ->
-              if (err)
-                return next(err)
-
-              userObjects.push(user)
-              console.log("User =====")
-              console.log(user)
-              if (not currentUser)
-                currentUser = user
-                firstUser = user
-              else
-                nextUser = user
-                users.update({
-                  _id: users.id(currentUser._id)
-                }, {
-                  $set: { $targetId: nextUser._id }
-                }, (err, result) ->
-                  if (err)
-                    return next(err)
-                  currentUser = nextUser
-                  ++numberOfAssignedUsers
-                  if (numberOfAssignedUsers is userIds.length)
-                    users.update({
-                      _id: users.id(currentUser._id)
-                    }, {
-                      $set: {$targetId: firstUser._id }
-                    })
-                    console.log('All users assigned')
-                )
-          )
-        )
-    )
-  else
-    res.send(400)
+  assignTargets(gameId, res)
 
 exports.games.attack = (req, res) ->
   attackingUserId = users.id(req.body.attackingUserId)
