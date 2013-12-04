@@ -20,7 +20,6 @@ app.put('/users/:id', routes.users.update)
 app.del('/users/:id', routes.users.delete)
 app.get('/users/createdGames/:creatorId', routes.users.createdGames)
 app.get('/users/:id/targets', routes.users.targets)
-app.post('/users/:id/addTarget', routes.users.targets)
 
 app.post('/games/new', routes.games.new)
 app.post('/games/newWithUsers', routes.games.newWithUsers)

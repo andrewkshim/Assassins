@@ -43,13 +43,14 @@ assignTargets = (gameId, res) ->
                 return next(err)
 
               userObjects.push(user)
-              console.log("User =====")
-              console.log(user)
-              if (not currentUser)
+              if (currentUser is null)
+                console.log("FIRST USER =====")
+                console.log(user)
                 currentUser = user
                 firstUser = user
-                ++numberOfAssignedUsers
               else
+                console.log("Current USER =====")
+                console.log(currentUser)
                 nextUser = user
                 users.update({
                   _id: users.id(currentUser._id)
@@ -57,26 +58,30 @@ assignTargets = (gameId, res) ->
                   $addToSet: { 'targets': {
                       _id: nextUser._id
                       name: nextUser.name
+                      markerId: nextUser.markerId
+                      gameId: gameId
                     }
                   }
                 }, (err, result) ->
                   if (err)
                     return next(err)
-                  currentUser = nextUser
                   ++numberOfAssignedUsers
-                  if (numberOfAssignedUsers is game.userIds.length)
+                  console.log('NUMBER: ' + numberOfAssignedUsers)
+                  if (numberOfAssignedUsers is game.userIds.length-1)
                     users.update({
                       _id: users.id(currentUser._id)
                     }, {
                       $addToSet: { 'targets': {
                           _id: users.id(firstUser._id)
                           name: firstUser.name
+                          markerId: firstUser.markerId
                         }
                       }
                     }, (err, results) ->
                     )
                     console.log('All users assigned')
                 )
+                currentUser = nextUser
           )
         )
     )
@@ -312,6 +317,20 @@ exports.games.newWithUsers = (req, res) ->
               return next(err)
         )
         assignTargets(games.id(game._id), res)
+        count = 1
+        game.userIds.forEach( (userId) ->
+          users.update(
+            { _id: users.id(userId) }
+            { $set: {
+                'markerId': count++
+              }
+            }
+            (err, results) ->
+              if (err)
+                console.log('could not update')
+          )
+
+        )
       )
     )
   else
@@ -342,33 +361,73 @@ exports.games.assignTargets = (req,res) ->
   gameId = games.id(req.params.gameId)
   assignTargets(gameId, res)
 
+getUsersNextTarget = (user, gameId) ->
+  nextTargetUser = user.targets[0]
+  if (nextTargetUser && nextTargetUser.gameId is gameId)
+    return nextTargetUser
+  console.log('targeting')
+  console.log(user)
+  nextTargetUser = nextUser for nextUser in user.targets when nextUser.gameId is gameId
+  return nextTargetUser
+
 exports.games.attack = (req, res) ->
   attackingUserId = users.id(req.body.attackingUserId)
-  targetMarkerId = req.body.targetMarkerId
+  targetUserId = users.id(req.body.targetUserId)
   gameId = games.id(req.params.gameId)
-  console.log(util.format('Attacking user: %s - targeted markerID: %s', attackingUserId, targetMarkerId))
-  if (not attackingUserId or targetMarkerId or gameId)
-    users.findAndModify({
-      query: { markerID: targetMarkerId }
-      update: { $set: { markerID: -1 } }
-    }, (err, attackedUser) ->
-      if (err)
-        return next(err)
-      if (attackedUser)
-        games.update({
-          _id: gameId
-        }, {
-          $pull: {
-            'userIds': users.id(attackedUser._id)
-          }
-        }, (err, results) ->
-          if (err)
-            return next(err)
-          return res.send(200)
+  console.log(util.format('Attacking user: %s - targeted user: %s', attackingUserId, targetUserId))
+  if (attackingUserId and targetUserId and gameId)
+    users.update(
+      { _id: attackingUserId }
+      { $pull: {
+          'targets': { _id: targetUserId }
+        }
+      }
+      (err, result) ->
+        if (err)
+          return console.log(err)
+        console.log('attacking user updated')
+        games.findOne(
+          { _id: gameId }
+          (err, game) ->
+            if (err)
+              return console.log(err)
+            games.update(
+              { _id: gameId }
+              { $pull: {
+                  'userIds': targetUserId
+                }
+              }
+              (err, result) ->
+                if (err)
+                  return console.log(err)
+                return console.log('updated game')
+            )
+            users.findOne(
+              { _id: targetUserId }
+              (err, previousTargetUser) ->
+                if (err)
+                  return console.log(err)
+                users.update(
+                  { _id: targetUserId }
+                  { $set: { markerId: -1 } }
+                  (err, results) ->
+                    if (err)
+                      return console.log(err)
+                    return console.log('target updated')
+                )
+                nextTargetUser = getUsersNextTarget(previousTargetUser, gameId)
+                if (game.userIds.length is 1)
+                  return res.send(200, { isWinner: 'true' })
+                if (not nextTargetUser)
+                  return res.send(500, { error: 'Could not find next target' })
+                return res.send(200, {
+                  isWinner: 'false'
+                  previousTargetName: previousTargetUser.name
+                  nextTargetName: nextTargetUser.name
+                })
+                  # TODO: update attacking user
+            )
         )
-        # also update attacking users score
-      else
-        return res.send(400)
     )
   else
     return res.send(400, { error: 'Invalid parameters' })
